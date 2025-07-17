@@ -1,0 +1,30 @@
+- name: Setup slurm/munge
+  hosts: nodes
+  become: true
+  tasks:
+    - name: Copy munge key
+      become: true
+      copy:
+        src: munge.key
+        dest: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: '0400'
+      become: true
+    - name: Copy slurm.conf
+      copy:
+        src: slurm.conf
+        dest: /etc/slurm/slurm.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart munge
+      service:
+        name: munge
+        state: restarted
+        enabled: true
+    - name: Restart slurmd
+      service:
+        name: slurmd
+        state: restarted
